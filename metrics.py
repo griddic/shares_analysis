@@ -17,6 +17,25 @@ def incom_not_weighted(actual_delta, predicted, threshold=30):
     to_buy = actual_delta[indexes]
     if len(to_buy) < 3:
         return None
+
+    quantities = numpy.array([1./len(to_buy) for i in to_buy])
+    income = sum(to_buy * quantities)
+    return income
+    # if len(to_buy) < 3:
+    #     return None
+    # return (gmean((to_buy / 100) + 1) - 1) * 100
+    # return numpy.mean(to_buy)
+
+def incom_reverse_weight(actual_delta, predicted, threshold=30):
+    actual_delta = numpy.array(actual_delta)
+    predicted = numpy.array(predicted)
+    indexes = numpy.where(predicted > threshold)
+    to_buy = actual_delta[indexes]
+    weights = 100 - to_buy
+    weights = weights / sum(weights)
+
+    if len(to_buy) < 3:
+        return None
     return (gmean((to_buy / 100) + 1) - 1) * 100
     # return numpy.mean(to_buy)
 

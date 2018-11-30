@@ -40,10 +40,11 @@ p_to_e_atomic_transformator = CompositeFunction(
 
 e_to_p_atomic_transformator = LessThenTo(0,0)
 
+p_to_b_const = 5
 p_to_b_atomic_transformator = CompositeFunction(
-    LessThenTo(0, 5),
-    MoreThenTo(5, 5),
-    construct_linear(5, 20, True),
+    LessThenTo(0, p_to_b_const),
+    MoreThenTo(p_to_b_const, p_to_b_const),
+    construct_linear(p_to_b_const, 20, True),
     construct_bender(3)
 )
 

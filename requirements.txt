@@ -3,3 +3,6 @@ pandas
 scipy
 sympy
 sklearn
+jupyter
+matplotlib
+requests

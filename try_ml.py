@@ -4,13 +4,18 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
 from metrics import incom_not_weighted
+from process import load_data, transform_multipliers
+from transformator import Multiplier
+
+df = load_data()
+delta = df['delta']
+dft = transform_multipliers(df)
+M = Multiplier
+columns = ["P/E", "E/P", "P/B", "P/S", "P/CF", "L/A", "NetDebt / EBITDA", "EV / EBITDA", "ROA", "ROE", "ROS", "delta"]
 
 
 def lin_regr(threshhold=30):
-    df = pandas.read_csv("resources/multipliers_to_cost_increase.csv")
-    df.fillna(0, inplace=True)
-    # df['custom'] = df['delta'] / 100 + 1
-    train, test = train_test_split(df, test_size=0.3)
+    train, test = train_test_split(dft, test_size=0.3)
 
     x_train = train.copy()
     del x_train['delta']
@@ -28,15 +33,12 @@ def lin_regr(threshhold=30):
     regr = linear_model.LinearRegression()
     regr.fit(x_train, y_train)
     predicted = regr.predict(x_test)
-    return incom_not_weighted(y_test, predicted, threshhold)
+    # print(regr.coef_)
+    return incom_not_weighted(y_test, predicted, threshhold) or 0
     # print(target.corr(pandas.Series(predicted)))
 
 def rand_tree(depth, est):
-    df = pandas.read_csv("resources/multipliers_to_cost_increase.csv")
-    df.fillna(0, inplace=True)
-
-
-    train, test = train_test_split(df, test_size=0.2)
+    train, test = train_test_split(dft, test_size=0.2)
 
     x_train = train.copy()
     del x_train['delta']
@@ -50,7 +52,7 @@ def rand_tree(depth, est):
     rf_model = RandomForestClassifier(max_depth=depth, n_estimators=est)
     rf_model.fit(x_train, y_train)
     predicted = rf_model.predict(x_test) * 10
-    return incom_not_weighted(y_test, predicted)
+    return incom_not_weighted(y_test, predicted) or 0
 
     # return y_test.corr(pandas.Series(predicted))
 
